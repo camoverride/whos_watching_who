@@ -7,6 +7,7 @@ import mediapipe as mp
 
 
 PORTRAIT = "jeff_1080-1920"
+PORTRAIT = "jeff"
 DEBUG = True
 
 # Initialize MediaPipe Face Detection
