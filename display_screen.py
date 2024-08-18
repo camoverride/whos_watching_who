@@ -6,12 +6,15 @@ import mediapipe as mp
 
 
 
+PORTRAIT = "jeff"
+DEBUG = True
+
 # Initialize MediaPipe Face Detection
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
-# Load all images into a list
-image_files = [f"pics/{i}.png" for i in range(1, 22)]  # Assuming you have images 1.png to 21.png
+# Load all image paths into a list (images are named "1.jpg" ... "21.jpg")
+image_files = [f"{PORTRAIT}/{i}.png" for i in range(1, 22)]
 images = [cv2.imread(img) for img in image_files]
 
 # Initialize video capture
@@ -37,7 +40,7 @@ while cap.isOpened():
         print("Failed to grab frame")
         break
 
-    # Flip the frame vertically
+    # Flip the frame vertically, to mimic a mirror.
     frame = cv2.flip(frame, 1)
 
     # Convert the image to RGB
@@ -49,7 +52,7 @@ while cap.isOpened():
     current_time = time.time()
 
     # Draw detections on the frame for debugging
-    if results.detections:
+    if results.detections and DEBUG:
         for detection in results.detections:
             bboxC = detection.location_data.relative_bounding_box
             x, y, w, h = (int(bboxC.xmin * frame_width), int(bboxC.ymin * frame_height),
@@ -57,8 +60,8 @@ while cap.isOpened():
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    # Display the webcam stream with detection annotations
-    cv2.imshow("Webcam Stream", cv2.resize(frame, (320, 240)))  # Resize to smaller window
+        # Display the webcam stream with detection annotations
+        cv2.imshow("Webcam Stream", cv2.resize(frame, (320, 240)))  # Resize to smaller window
 
     # Handle the smoothing transition
     if transition_in_progress:
@@ -82,7 +85,7 @@ while cap.isOpened():
                 transition_in_progress = False
 
     else:
-        # Only update detection every 0.25 seconds and if no transition is in progress
+        # Only update detection every 0.05 seconds and if no transition is in progress
         if current_time - last_detection_time >= 0.05:
             if results.detections:
                 for detection in results.detections:
@@ -112,8 +115,9 @@ while cap.isOpened():
         if last_displayed_index is not None:
             cv2.imshow("Image Display", images[last_displayed_index - 1])  # Adjust index for 0-based list
             cv2.moveWindow("Image Display", 200, 200)  # Move "Image Display" window to (100, 100)
+    
     # Wait for 'q' to quit
-    if cv2.waitKey(5) & 0xFF == ord('q'):
+    if cv2.waitKey(5) & 0xFF == ord("q"):
         break
 
 # Release the capture and close windows
