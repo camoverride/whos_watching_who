@@ -4,10 +4,7 @@ import time
 from collections import deque
 import mediapipe as mp
 
-
-
 PORTRAIT = "jeff_1080-1920"
-PORTRAIT = "jeff"
 DEBUG = True
 
 # Initialize MediaPipe Face Detection
@@ -18,9 +15,17 @@ face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detectio
 image_files = [f"pics/{PORTRAIT}/{i}.png" for i in range(1, 22)]
 images = [cv2.imread(img) for img in image_files]
 
+# Verify that all images are loaded correctly
+for i, img in enumerate(images):
+    if img is None:
+        print(f"Image {image_files[i]} failed to load.")
+
 # Initialize video capture
 cap = cv2.VideoCapture(0)
-print("Video capture started")
+if not cap.isOpened():
+    print("Error: Could not open video capture.")
+else:
+    print("Video capture started")
 
 # Initialize variables
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -75,8 +80,9 @@ while cap.isOpened():
                 next_index = start_index - 1
 
             # Display the next image in the transition
-            cv2.imshow("Image Display", images[next_index - 1])  # Adjust index for 0-based list
-            last_displayed_index = next_index
+            if images[next_index - 1] is not None:
+                cv2.imshow("Image Display", cv2.resize(images[next_index - 1], (480, 320)))  # Adjust index for 0-based list
+                last_displayed_index = next_index
             
             # Update indices
             start_index = next_index
@@ -115,7 +121,8 @@ while cap.isOpened():
 
         # Continue displaying the last valid image
         if last_displayed_index is not None:
-            cv2.imshow("Image Display", images[last_displayed_index - 1])  # Adjust index for 0-based list
+            if images[last_displayed_index - 1] is not None:
+                cv2.imshow("Image Display", cv2.resize(images[last_displayed_index - 1], (480, 320)))  # Adjust index for 0-based list
             cv2.moveWindow("Image Display", 200, 200)  # Move "Image Display" window to (100, 100)
     
     # Wait for 'q' to quit
