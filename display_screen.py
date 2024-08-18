@@ -4,6 +4,8 @@ import time
 from collections import deque
 import mediapipe as mp
 
+
+
 PORTRAIT = "jeff_1080-1920"
 DEBUG = True
 
@@ -38,6 +40,14 @@ end_index = None
 
 # Store previous positions for smoothing
 position_history = deque(maxlen=5)  # Keep track of the last 5 positions
+
+# Create a fullscreen window for image display
+cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
+cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+# Show the initial image (center facing)
+cv2.imshow("Image Display", f"pics/{PORTRAIT}/11.png")
+
 
 while cap.isOpened():
     # Capture frame
@@ -81,7 +91,7 @@ while cap.isOpened():
 
             # Display the next image in the transition
             if images[next_index - 1] is not None:
-                cv2.imshow("Image Display", cv2.resize(images[next_index - 1], (480, 320)))  # Adjust index for 0-based list
+                cv2.imshow("Image Display", images[next_index - 1])  # Adjust index for 0-based list
                 last_displayed_index = next_index
             
             # Update indices
@@ -122,8 +132,7 @@ while cap.isOpened():
         # Continue displaying the last valid image
         if last_displayed_index is not None:
             if images[last_displayed_index - 1] is not None:
-                cv2.imshow("Image Display", cv2.resize(images[last_displayed_index - 1], (480, 320)))  # Adjust index for 0-based list
-            cv2.moveWindow("Image Display", 200, 200)  # Move "Image Display" window to (100, 100)
+                cv2.imshow("Image Display", images[last_displayed_index - 1])  # Adjust index for 0-based list
     
     # Wait for 'q' to quit
     if cv2.waitKey(5) & 0xFF == ord("q"):
