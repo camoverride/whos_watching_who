@@ -46,7 +46,8 @@ cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 # Show the initial image (center facing)
-cv2.imshow("Image Display", f"pics/{PORTRAIT}/11.png")
+start_im = cv2.imread(f"pics/{PORTRAIT}/11.png")
+cv2.imshow("Image Display", start_im)
 
 
 while cap.isOpened():
