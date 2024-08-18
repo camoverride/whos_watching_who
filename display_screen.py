@@ -14,7 +14,7 @@ mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
 # Load all image paths into a list (images are named "1.jpg" ... "21.jpg")
-image_files = [f"{PORTRAIT}/{i}.png" for i in range(1, 22)]
+image_files = [f"pics/{PORTRAIT}/{i}.png" for i in range(1, 22)]
 images = [cv2.imread(img) for img in image_files]
 
 # Initialize video capture
