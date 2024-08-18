@@ -19,6 +19,7 @@ images = [cv2.imread(img) for img in image_files]
 
 # Initialize video capture
 cap = cv2.VideoCapture(0)
+print("Video capture started")
 
 # Initialize variables
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
