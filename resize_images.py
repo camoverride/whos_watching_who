@@ -26,7 +26,7 @@ def resize_images(input_dir, output_dir, width, height):
 # Example usage
 input_dir = "pics/jeff_1080-1920"
 output_dir = "pics/jeff_1080-1920_resized"
-width = 1920  # Desired width
-height = 1080  # Desired height
+width = 1080  # Desired width
+height = 1920  # Desired height
 
 resize_images(input_dir, output_dir, width, height)
