@@ -33,8 +33,8 @@ for i, img in enumerate(images):
 
 # Initialize the PiCamera2 module
 picam2 = Picamera2()
-# config = picam2.create_preview_configuration(main={"size": (640, 480), "format": "RGB888"})
 config = picam2.create_preview_configuration(main={"size": (640, 480), "format": "RGB888"})
+
 picam2.configure(config)
 picam2.start()
 
@@ -64,9 +64,6 @@ while True:
 
     # Flip the frame vertically, to mimic a mirror.
     frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
-
-    # Downsize the frame for image processing
-    frame = cv2.resize(frame, (640, 480))
 
     # Convert the image to RGB
     rgb_frame = frame  # Already in RGB format
