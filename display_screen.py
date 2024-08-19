@@ -59,7 +59,7 @@ cv2.imshow("Image Display", start_im)
 
 while True:
     # Capture frame
-    frame = picam2.capture_array()
+    frame = np.array(picam2.capture_array(), dtype=np.uint8)
 
     # Flip the frame vertically, to mimic a mirror.
     frame = np.flip(frame, 1)
