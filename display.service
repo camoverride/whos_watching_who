@@ -1,0 +1,15 @@
+[Unit]
+Description=display gaze
+After=default.target
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/pi/whos_watching_who
+ExecStart=/home/pi/whos_watching_who/.venv/bin/python /home/pi/whos_watching_who/display_screen.py
+StandardOutput=journal
+StandardError=journal
+Environment="PATH=/home/pi/whos_watching_who/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+[Install]
+WantedBy=default.target
