@@ -73,13 +73,14 @@ while True:
     current_time = time.time()
 
     # Draw detections on the frame for debugging
-    if results.detections and DEBUG:
-        for detection in results.detections:
-            bboxC = detection.location_data.relative_bounding_box
-            x, y, w, h = (int(bboxC.xmin * frame_width), int(bboxC.ymin * frame_height),
-                          int(bboxC.width * frame_width), int(bboxC.height * frame_height))
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    if DEBUG:
+        if results.detections:
+            for detection in results.detections:
+                bboxC = detection.location_data.relative_bounding_box
+                x, y, w, h = (int(bboxC.xmin * frame_width), int(bboxC.ymin * frame_height),
+                            int(bboxC.width * frame_width), int(bboxC.height * frame_height))
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         # Display the webcam stream with detection annotations
         debug_window_name = "Webcam Stream"
