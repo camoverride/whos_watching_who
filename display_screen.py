@@ -62,7 +62,8 @@ while True:
     frame = np.array(picam2.capture_array(), dtype=np.uint8)
 
     # Flip the frame vertically, to mimic a mirror.
-    frame = np.flip(frame, 1)
+    # frame = np.flip(frame, 1)
+    frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
 
     # Convert the image to RGB
     rgb_frame = frame  # Already in RGB format
