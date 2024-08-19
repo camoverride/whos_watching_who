@@ -14,6 +14,9 @@ DEBUG = False
 os.environ["DISPLAY"] = ':0'
 os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
 
+# Hide the mouse
+os.system("unclutter -idle 0 &")
+
 # Initialize MediaPipe Face Detection
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
