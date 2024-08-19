@@ -6,12 +6,11 @@
 Hide the mouse:
 
 - `sudo apt-get install unclutter`
-- `unclutter -idle 0`
 
 Clone the repo, then:
 
-`python -m venv .venv`
-`source venv/bin/activate`
+`python -m venv --system-site-packages .venv` (system-site-packages so we get the `picamera2` package.)
+`source .venv/bin/activate`
 `pip install -r requirements.txt`
 
 `export DISPLAY=:0`
