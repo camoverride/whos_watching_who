@@ -9,7 +9,7 @@ from picamera2 import Picamera2
 
 # Set the global variables
 PORTRAIT = "jeff_1080-1920_resized"
-DEBUG = False
+DEBUG = True
 
 # Rotate screen
 os.environ["DISPLAY"] = ':0'
@@ -57,7 +57,6 @@ cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLS
 start_im = cv2.imread(f"pics/{PORTRAIT}/11.png")
 cv2.imshow("Image Display", start_im)
 
-
 while True:
     # Capture frame
     frame = picam2.capture_array()
@@ -83,7 +82,11 @@ while True:
             cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         # Display the webcam stream with detection annotations
-        cv2.imshow("Webcam Stream", cv2.resize(frame, (320, 240)))  # Resize to smaller window
+        debug_window_name = "Webcam Stream"
+        cv2.namedWindow(debug_window_name, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(debug_window_name, 320, 240)  # Set size of the debug window
+        cv2.moveWindow(debug_window_name, 0, frame_height - 240)  # Move window to bottom-left
+        cv2.imshow(debug_window_name, frame)  # Show frame in the debug window
 
     # Handle the smoothing transition
     if transition_in_progress:
