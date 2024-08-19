@@ -12,7 +12,7 @@ DEBUG = False
 
 # Rotate screen
 os.environ["DISPLAY"] = ':0'
-os.system("wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
+os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
 
 # Initialize MediaPipe Face Detection
 mp_face_detection = mp.solutions.face_detection
