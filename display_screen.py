@@ -4,9 +4,10 @@ import numpy as np
 import time
 from collections import deque
 import mediapipe as mp
+from picamera2 import Picamera2
 
 
-
+# Set the global variables
 PORTRAIT = "jeff_1080-1920_resized"
 DEBUG = False
 
@@ -30,16 +31,15 @@ for i, img in enumerate(images):
     if img is None:
         print(f"Image {image_files[i]} failed to load.")
 
-# Initialize video capture
-cap = cv2.VideoCapture(0)
-if not cap.isOpened():
-    print("Error: Could not open video capture.")
-else:
-    print("Video capture started")
+# Initialize the PiCamera2 module
+picam2 = Picamera2()
+config = picam2.create_preview_configuration(main={"size": (640, 480), "format": "RGB888"})
+picam2.configure(config)
+picam2.start()
 
 # Initialize variables
-frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+frame_width = 640
+frame_height = 480
 last_displayed_index = None  # Track the last displayed image index
 last_detection_time = time.time()
 transition_in_progress = False  # To check if we're in the middle of a smoothing transition
@@ -58,19 +58,15 @@ start_im = cv2.imread(f"pics/{PORTRAIT}/11.png")
 cv2.imshow("Image Display", start_im)
 
 
-while cap.isOpened():
+while True:
     # Capture frame
-    ret, frame = cap.read()
-
-    if not ret:
-        print("Failed to grab frame")
-        break
+    frame = picam2.capture_array()
 
     # Flip the frame vertically, to mimic a mirror.
-    frame = cv2.flip(frame, 1)
+    frame = np.flip(frame, 1)
 
     # Convert the image to RGB
-    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    rgb_frame = frame  # Already in RGB format
     
     # Detect faces using MediaPipe
     results = face_detection.process(rgb_frame)
@@ -148,5 +144,5 @@ while cap.isOpened():
         break
 
 # Release the capture and close windows
-cap.release()
+picam2.stop()
 cv2.destroyAllWindows()

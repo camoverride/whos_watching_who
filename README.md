@@ -41,10 +41,11 @@ Get the logs: `journalctl --user -u display.service`
 
 ## TODO
 
-- [X] Tested on MacBook
-- [X] Tested on Pi 4B with webcam (bad SD card)
+- [X] Test on MacBook
+- [X] Test on Pi 4B with webcam (bad SD card)
 - [X] Rotate screen on reboot
-- [ ] Tested on Pi 4B with Picam (bad SD card)
+- [X] Hide mouse
+- [ ] Test on Pi 4B with Picam (bad SD card)
 - [ ] Install in portrait frame
 
 
