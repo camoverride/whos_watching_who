@@ -1,4 +1,5 @@
 import os
+import subprocess
 import cv2
 import numpy as np
 import time
@@ -12,7 +13,12 @@ DEBUG = False
 
 # Rotate screen
 os.environ["DISPLAY"] = ':0'
-os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
+command = [
+    'wlr-randr',
+    '--output', 'HDMI-A-1',
+    '--transform', '90'
+]
+result = subprocess.run(command, env={'WAYLAND_DISPLAY': 'wayland-1'}, capture_output=True, text=True)
 
 # Initialize MediaPipe Face Detection
 mp_face_detection = mp.solutions.face_detection
