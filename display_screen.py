@@ -99,7 +99,7 @@ while True:
 
     # Handle the smoothing transition
     if transition_in_progress:
-        if current_time - last_detection_time >= 0.05:
+        if current_time - last_detection_time >= 0.0001:
             # Perform the transition
             if start_index < end_index:
                 next_index = start_index + 1
