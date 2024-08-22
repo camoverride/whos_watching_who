@@ -3,13 +3,20 @@ import cv2
 import numpy as np
 import time
 from collections import deque
+import yaml
 import mediapipe as mp
 from picamera2 import Picamera2
 
 
+
+# Load the YAML configuration file
+with open("config.yaml", "r") as file:
+    config = yaml.safe_load(file)
+
 # Set the global variables
-PORTRAIT = "jeff_1080-1920_resized"
-DEBUG = True
+PORTRAIT = config["path_to_images"]
+DEBUG = config["debug"]
+NUM_LOCATIONS = len(os.listdir(PORTRAIT))
 
 # Rotate screen
 os.environ["DISPLAY"] = ':0'
@@ -23,7 +30,7 @@ mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
 # Load all image paths into a list (images are named "1.jpg" ... "21.jpg")
-image_files = [f"pics/{PORTRAIT}/{i}.png" for i in range(1, 22)]
+image_files = [f"pics/{PORTRAIT}/{i}.png" for i in range(1, NUM_LOCATIONS + 1)]
 images = [cv2.imread(img) for img in image_files]
 
 # Verify that all images are loaded correctly
@@ -33,14 +40,14 @@ for i, img in enumerate(images):
 
 # Initialize the PiCamera2 module
 picam2 = Picamera2()
-config = picam2.create_preview_configuration(main={"size": (4656, 3496), "format": "RGB888"})
+config = picam2.create_preview_configuration(main={"size": (1280, 720), "format": "RGB888"})
 
 picam2.configure(config)
 picam2.start()
 
 # Initialize variables
-frame_width = 4656#1280#640
-frame_height = 3496#720#480
+frame_width = 1280
+frame_height = 720
 last_displayed_index = None  # Track the last displayed image index
 last_detection_time = time.time()
 transition_in_progress = False  # To check if we're in the middle of a smoothing transition
@@ -55,7 +62,7 @@ cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 # Show the initial image (center facing)
-start_im = cv2.imread(f"pics/{PORTRAIT}/11.png")
+start_im = cv2.imread(f"pics/{PORTRAIT}/{NUM_LOCATIONS // 2 + 1}.png")
 cv2.imshow("Image Display", start_im)
 
 while True:
@@ -121,14 +128,14 @@ while True:
                     bboxC = detection.location_data.relative_bounding_box
                     center_x = bboxC.xmin + bboxC.width / 2
 
-                    # Normalize the x-coordinate to the range [1, 21]
-                    horizontal_position = (center_x * 20) + 1
+                    # Normalize the x-coordinate to the range [1, NUM_LOCATIONS]
+                    horizontal_position = (center_x * (NUM_LOCATIONS - 1)) + 1
                     position_history.append(horizontal_position)  # Add to position history
 
                     # Smooth the positions by taking the median of the last few positions
                     smoothed_position = np.median(position_history)
                     closest_index = round(smoothed_position)
-                    closest_index = min(max(closest_index, 1), 21)  # Ensure index is within [1, 21]
+                    closest_index = min(max(closest_index, 1), NUM_LOCATIONS)  # Ensure index is within [1, NUM_LOCATIONS]
 
                     # If the detected position corresponds to a different image, start smoothing transition
                     if closest_index != last_displayed_index:
