@@ -30,7 +30,7 @@ mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
 # Load all image paths into a list (images are named "1.jpg" ... "21.jpg")
-image_files = [f"pics/{PORTRAIT}/{i}.png" for i in range(1, NUM_LOCATIONS + 1)]
+image_files = [f"{PORTRAIT}/{i}.png" for i in range(1, NUM_LOCATIONS + 1)]
 images = [cv2.imread(img) for img in image_files]
 
 # Verify that all images are loaded correctly
@@ -62,7 +62,7 @@ cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 # Show the initial image (center facing)
-start_im = cv2.imread(f"pics/{PORTRAIT}/{NUM_LOCATIONS // 2 + 1}.png")
+start_im = cv2.imread(f"{PORTRAIT}/{NUM_LOCATIONS // 2 + 1}.png")
 cv2.imshow("Image Display", start_im)
 
 while True:
