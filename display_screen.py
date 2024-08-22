@@ -29,14 +29,52 @@ os.system("unclutter -idle 0 &")
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
-# Load all image paths into a list (images are named "1.jpg" ... "21.jpg")
-image_files = [f"{PORTRAIT}/{i}.png" for i in range(1, NUM_LOCATIONS + 1)]
-images = [cv2.imread(img) for img in image_files]
+# Directory to save memmaps
+MEMMAP_DIR = f"{PORTRAIT}_memmaps"
+if not os.path.exists(MEMMAP_DIR):
+    os.makedirs(MEMMAP_DIR)
 
-# Verify that all images are loaded correctly
-for i, img in enumerate(images):
-    if img is None:
-        print(f"Image {image_files[i]} failed to load.")
+# Function to convert PNG images to memmaps
+def convert_images_to_memmaps(image_files, memmap_dir):
+    memmap_files = []
+    for img_file in image_files:
+        # Read the image using OpenCV
+        img = cv2.imread(img_file)
+        
+        # Create a memmap file with the same name as the image file, but with a .mmap extension
+        memmap_file = os.path.join(memmap_dir, os.path.basename(img_file).replace('.png', '.mmap'))
+        memmap = np.memmap(memmap_file, dtype=img.dtype, mode='w+', shape=img.shape)
+        
+        # Copy image data to memmap
+        memmap[:] = img[:]
+        memmap.flush()
+        
+        memmap_files.append(memmap_file)
+    
+    return memmap_files
+
+# Load all image paths into a list (images are named "1.png" ... "NUM_LOCATIONS.png")
+image_files = [f"{PORTRAIT}/{i}.png" for i in range(1, NUM_LOCATIONS + 1)]
+
+# Convert all images to memmaps
+memmap_files = convert_images_to_memmaps(image_files, MEMMAP_DIR)
+
+# Load memmaps into memory
+def load_memmaps(memmap_files):
+    images = []
+    for memmap_file in memmap_files:
+        # Open the memmap file
+        img_shape = (720, 1280, 3)  # Example shape (height, width, channels)
+        img_dtype = np.uint8       # Example dtype
+        memmap = np.memmap(memmap_file, dtype=img_dtype, mode='r', shape=img_shape)
+        
+        # Convert memmap to ndarray
+        images.append(np.array(memmap))
+    
+    return images
+
+# Load all images as memmaps
+images = load_memmaps(memmap_files)
 
 # Initialize the PiCamera2 module
 picam2 = Picamera2()
@@ -62,7 +100,7 @@ cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 # Show the initial image (center facing)
-start_im = cv2.imread(f"{PORTRAIT}/{NUM_LOCATIONS // 2 + 1}.png")
+start_im = images[NUM_LOCATIONS // 2]
 cv2.imshow("Image Display", start_im)
 
 while True:
