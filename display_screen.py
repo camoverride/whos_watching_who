@@ -33,7 +33,7 @@ for i, img in enumerate(images):
 
 # Initialize the PiCamera2 module
 picam2 = Picamera2()
-config = picam2.create_preview_configuration(main={"size": (1280, 720), "format": "RGB888"})
+config = picam2.create_preview_configuration(main={"size": (4656, 3496), "format": "RGB888"})
 
 picam2.configure(config)
 picam2.start()
