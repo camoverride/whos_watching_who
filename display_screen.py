@@ -39,8 +39,8 @@ picam2.configure(config)
 picam2.start()
 
 # Initialize variables
-frame_width = 1280#640
-frame_height = 720#480
+frame_width = 4656#1280#640
+frame_height = 3496#720#480
 last_displayed_index = None  # Track the last displayed image index
 last_detection_time = time.time()
 transition_in_progress = False  # To check if we're in the middle of a smoothing transition
