@@ -40,9 +40,14 @@ def convert_images_to_memmaps(image_files, memmap_dir):
     for img_file in image_files:
         # Read the image using OpenCV
         img = cv2.imread(img_file)
+        if img is None:
+            print(f"Failed to load image: {img_file}")
+            continue
         
         # Create a memmap file with the same name as the image file, but with a .mmap extension
         memmap_file = os.path.join(memmap_dir, os.path.basename(img_file).replace('.png', '.mmap'))
+        
+        # Create a memmap object with the correct shape and dtype
         memmap = np.memmap(memmap_file, dtype=img.dtype, mode='w+', shape=img.shape)
         
         # Copy image data to memmap
@@ -63,13 +68,15 @@ memmap_files = convert_images_to_memmaps(image_files, MEMMAP_DIR)
 def load_memmaps(memmap_files):
     images = []
     for memmap_file in memmap_files:
-        # Open the memmap file
+        # Determine the shape and dtype of the original images by loading one image
         img_shape = (720, 1280, 3)  # Example shape (height, width, channels)
         img_dtype = np.uint8       # Example dtype
+        
+        # Create a read-only memmap object
         memmap = np.memmap(memmap_file, dtype=img_dtype, mode='r', shape=img_shape)
         
-        # Convert memmap to ndarray
-        images.append(np.array(memmap))
+        # Append the memmap array to the images list
+        images.append(memmap)
     
     return images
 
