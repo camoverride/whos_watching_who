@@ -3,6 +3,10 @@
 
 ## Setup & Test
 
+Install the wide angle camera drivers [link](https://docs.arducam.com/Raspberry-Pi-Camera/Native-camera/16MP-IMX519/#supported-platforms-and-os).
+
+Camera model [link](https://www.amazon.com/dp/B0C53BBMLG?ref=ppx_yo2ov_dt_b_fed_asin_title#customerReviews)
+
 Hide the mouse:
 
 - `sudo apt-get install unclutter`
