@@ -77,9 +77,9 @@ while True:
                         int(bboxC.width * frame.shape[1]), 
                         int(bboxC.height * frame.shape[0]))
 
-            # Adjust the x-coordinate for the mirrored frame
-            x = frame.shape[1] - (x + w)
-            
+            # Adjust the x-coordinate for the mirrored frame correctly
+            x = frame.shape[1] - (x + w)  # This correctly mirrors the x-coordinate
+
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
