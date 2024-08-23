@@ -13,10 +13,12 @@ from picamera2 import Picamera2
 with open("config.yaml", "r") as file:
     config = yaml.safe_load(file)
 
-# Set the global variables
-PORTRAIT = config["path_to_images"]
-DEBUG = config["debug"]
-NUM_LOCATIONS = len(os.listdir(PORTRAIT))
+# Read the images
+num_locations = len(os.listdir(config["path_to_image_directory"]))
+images = np.memmap(config["path_to_image_memmap"],
+                   dtype=np.uint8,
+                   mode='r',
+                   shape=(num_locations, config["height"], config["width"], 3))
 
 # Rotate screen
 os.environ["DISPLAY"] = ':0'
@@ -29,70 +31,14 @@ os.system("unclutter -idle 0 &")
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
-# Directory to save memmaps
-MEMMAP_DIR = f"{PORTRAIT}_memmaps"
-if not os.path.exists(MEMMAP_DIR):
-    os.makedirs(MEMMAP_DIR)
-
-# Function to convert PNG images to memmaps
-def convert_images_to_memmaps(image_files, memmap_dir):
-    memmap_files = []
-    for img_file in image_files:
-        # Read the image using OpenCV
-        img = cv2.imread(img_file)
-        if img is None:
-            print(f"Failed to load image: {img_file}")
-            continue
-        
-        # Create a memmap file with the same name as the image file, but with a .mmap extension
-        memmap_file = os.path.join(memmap_dir, os.path.basename(img_file).replace('.png', '.mmap'))
-        
-        # Create a memmap object with the correct shape and dtype
-        memmap = np.memmap(memmap_file, dtype=img.dtype, mode='w+', shape=img.shape)
-        
-        # Copy image data to memmap
-        memmap[:] = img[:]
-        memmap.flush()
-        
-        memmap_files.append(memmap_file)
-    
-    return memmap_files
-
-# Load all image paths into a list (images are named "1.png" ... "NUM_LOCATIONS.png")
-image_files = [f"{PORTRAIT}/{i}.png" for i in range(1, NUM_LOCATIONS + 1)]
-
-# Convert all images to memmaps
-memmap_files = convert_images_to_memmaps(image_files, MEMMAP_DIR)
-
-# Load memmaps into memory
-def load_memmaps(memmap_files):
-    images = []
-    for memmap_file in memmap_files:
-        # Determine the shape and dtype of the original images by loading one image
-        img_shape = (720, 1280, 3)  # Example shape (height, width, channels)
-        img_dtype = np.uint8       # Example dtype
-        
-        # Create a read-only memmap object
-        memmap = np.memmap(memmap_file, dtype=img_dtype, mode='r', shape=img_shape)
-        
-        # Append the memmap array to the images list
-        images.append(memmap)
-    
-    return images
-
-# Load all images as memmaps
-images = load_memmaps(memmap_files)
-
 # Initialize the PiCamera2 module
 picam2 = Picamera2()
-config = picam2.create_preview_configuration(main={"size": (1280, 720), "format": "RGB888"})
-
-picam2.configure(config)
+picam2.configure(picam2.create_preview_configuration(main={"size": (1280, 720), "format": "RGB888"}))
 picam2.start()
 
 # Initialize variables
-frame_width = 1280
-frame_height = 720
+frame_width = config["width"]
+frame_height = config["height"]
 last_displayed_index = None  # Track the last displayed image index
 last_detection_time = time.time()
 transition_in_progress = False  # To check if we're in the middle of a smoothing transition
@@ -107,15 +53,14 @@ cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 # Show the initial image (center facing)
-start_im = images[NUM_LOCATIONS // 2]
+start_im = images[num_locations // 2]
 cv2.imshow("Image Display", start_im)
 
+
+# Main event loop.
 while True:
     # Capture frame
     frame = np.array(picam2.capture_array(), dtype=np.uint8)
-
-    # Flip the frame vertically, to mimic a mirror.
-    frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
 
     # Convert the image to RGB
     rgb_frame = frame  # Already in RGB format
@@ -126,7 +71,7 @@ while True:
     current_time = time.time()
 
     # Draw detections on the frame for debugging
-    if DEBUG:
+    if config["debug"]:
         if results.detections:
             for detection in results.detections:
                 bboxC = detection.location_data.relative_bounding_box
@@ -174,13 +119,13 @@ while True:
                     center_x = bboxC.xmin + bboxC.width / 2
 
                     # Normalize the x-coordinate to the range [1, NUM_LOCATIONS]
-                    horizontal_position = (center_x * (NUM_LOCATIONS - 1)) + 1
+                    horizontal_position = (center_x * (num_locations - 1)) + 1
                     position_history.append(horizontal_position)  # Add to position history
 
                     # Smooth the positions by taking the median of the last few positions
                     smoothed_position = np.median(position_history)
                     closest_index = round(smoothed_position)
-                    closest_index = min(max(closest_index, 1), NUM_LOCATIONS)  # Ensure index is within [1, NUM_LOCATIONS]
+                    closest_index = min(max(closest_index, 1), num_locations)  # Ensure index is within [1, NUM_LOCATIONS]
 
                     # If the detected position corresponds to a different image, start smoothing transition
                     if closest_index != last_displayed_index:
