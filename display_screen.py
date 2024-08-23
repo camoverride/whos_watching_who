@@ -62,8 +62,8 @@ while True:
     # Capture frame
     frame = np.array(picam2.capture_array(), dtype=np.uint8)
 
-    # Flip the frame horizontally, to mimic a mirror.
-    frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
+    # # Flip the frame horizontally, to mimic a mirror.
+    # frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
 
     # Detect faces using MediaPipe on the flipped frame
     results = face_detection.process(frame)
