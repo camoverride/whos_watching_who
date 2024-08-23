@@ -84,12 +84,12 @@ while True:
             cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    # Display the webcam stream with detection annotations
-    debug_window_name = "Webcam Stream"
-    cv2.namedWindow(debug_window_name, cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(debug_window_name, 320, 240)  # Set size of the debug window
-    cv2.moveWindow(debug_window_name, 0, frame_height - 240)  # Move window to bottom-left
-    cv2.imshow(debug_window_name, frame)  # Show frame in the debug window
+        # Display the webcam stream with detection annotations
+        debug_window_name = "Webcam Stream"
+        cv2.namedWindow(debug_window_name, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(debug_window_name, 320, 240)  # Set size of the debug window
+        cv2.moveWindow(debug_window_name, 0, frame_height - 240)  # Move window to bottom-left
+        cv2.imshow(debug_window_name, frame)  # Show frame in the debug window
 
     current_time = time.time()
 
