@@ -1,2 +1,8 @@
-path_to_images: nadal_101
+# All the eye images
+path_to_image_directory: nadal_101
+path_to_image_memmap: nadal_101.dat
+
+# The dimensions of the d
+height: 1920
+width: 1080
 debug: True
