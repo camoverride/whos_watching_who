@@ -62,33 +62,36 @@ while True:
     # Capture frame
     frame = np.array(picam2.capture_array(), dtype=np.uint8)
 
-    # Flip the frame vertically, to mimic a mirror.
+    # Flip the frame horizontally, to mimic a mirror.
     frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
 
-    # Convert the image to RGB
-    rgb_frame = frame  # Already in RGB format
-    
-    # Detect faces using MediaPipe
-    results = face_detection.process(rgb_frame)
-    
-    current_time = time.time()
+    # Detect faces using MediaPipe on the flipped frame
+    results = face_detection.process(frame)
 
     # Draw detections on the frame for debugging
-    if config["debug"]:
-        if results.detections:
-            for detection in results.detections:
-                bboxC = detection.location_data.relative_bounding_box
-                x, y, w, h = (int(bboxC.xmin * frame_width), int(bboxC.ymin * frame_height),
-                            int(bboxC.width * frame_width), int(bboxC.height * frame_height))
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+    if config["debug"] and results.detections:
+        for detection in results.detections:
+            bboxC = detection.location_data.relative_bounding_box
+            x, y, w, h = (int(bboxC.xmin * frame.shape[1]), 
+                          int(bboxC.ymin * frame.shape[0]),
+                          int(bboxC.width * frame.shape[1]), 
+                          int(bboxC.height * frame.shape[0]))
+            
+            # Adjust the x-coordinate for the mirrored frame
+            x = frame.shape[1] - (x + w)
+            
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        # Display the webcam stream with detection annotations
-        debug_window_name = "Webcam Stream"
-        cv2.namedWindow(debug_window_name, cv2.WINDOW_NORMAL)
-        cv2.resizeWindow(debug_window_name, 320, 240)  # Set size of the debug window
-        cv2.moveWindow(debug_window_name, 0, frame_height - 240)  # Move window to bottom-left
-        cv2.imshow(debug_window_name, frame)  # Show frame in the debug window
+    # Display the webcam stream with detection annotations
+    debug_window_name = "Webcam Stream"
+    cv2.namedWindow(debug_window_name, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(debug_window_name, 320, 240)  # Set size of the debug window
+    cv2.moveWindow(debug_window_name, 0, frame_height - 240)  # Move window to bottom-left
+    cv2.imshow(debug_window_name, frame)  # Show frame in the debug window
+
+    current_time = time.time()
 
     # Handle the smoothing transition
     if transition_in_progress:
