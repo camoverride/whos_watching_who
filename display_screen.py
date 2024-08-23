@@ -95,12 +95,12 @@ while True:
 
     # Handle the smoothing transition
     if transition_in_progress:
-        if current_time - last_detection_time >= 0.0001:
+        if current_time - last_detection_time >= 0.00005:
             # Perform the transition
             if start_index < end_index:
-                next_index = start_index + 1
+                next_index = min(end_index, start_index + config["stride"])
             else:
-                next_index = start_index - 1
+                next_index = max(end_index, start_index - config["stride"])
 
             # Display the next image in the transition
             if images[next_index - 1] is not None:

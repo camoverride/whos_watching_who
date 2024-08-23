@@ -2,7 +2,12 @@
 path_to_image_directory: nadal_101
 path_to_image_memmap: nadal_101.dat
 
-# The dimensions of the d
+# The dimensions of the image (should be the same as the monitor)
 height: 1920
 width: 1080
-debug: True
+
+# For large image sets (> 50) increate the stride so transitions are faster.
+stride: 2
+
+# Show the debug video?
+debug: False
