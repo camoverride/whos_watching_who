@@ -73,11 +73,11 @@ while True:
         for detection in results.detections:
             bboxC = detection.location_data.relative_bounding_box
             x, y, w, h = (int(bboxC.xmin * frame.shape[1]), 
-                          int(bboxC.ymin * frame.shape[0]),
-                          int(bboxC.width * frame.shape[1]), 
-                          int(bboxC.height * frame.shape[0]))
+                        int(bboxC.ymin * frame.shape[0]),
+                        int(bboxC.width * frame.shape[1]), 
+                        int(bboxC.height * frame.shape[0]))
             
-            # Adjust the x-coordinate for the mirrored frame
+            # Correct x-coordinate for the mirrored frame
             x = frame.shape[1] - x - w
             
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
