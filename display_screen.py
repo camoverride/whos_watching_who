@@ -64,7 +64,6 @@ while True:
 
     # Flip the frame horizontally, to mimic a mirror.
     frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
-    # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
     # Detect faces using MediaPipe on the flipped frame
     results = face_detection.process(frame)
@@ -79,7 +78,7 @@ while True:
                           int(bboxC.height * frame.shape[0]))
             
             # Adjust the x-coordinate for the mirrored frame
-            x = frame.shape[1] - (x + w)
+            x = frame.shape[1] - x - w
             
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), 
