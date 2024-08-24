@@ -18,7 +18,8 @@ Clone the repo, then:
 `pip install -r requirements.txt`
 
 `export DISPLAY=:0`
-`WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90`
+`WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-2 --transform 90`
+`HDMI-A-1` for HDMI port 1
 
 `python display_screen.py`
 
