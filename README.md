@@ -49,8 +49,11 @@ Get the logs: `journalctl --user -u display.service`
 - [X] Test on Pi 4B with webcam (bad SD card)
 - [X] Rotate screen on reboot
 - [X] Hide mouse
-- [ ] Test on Pi 4B with Picam (bad SD card)
-- [ ] Install in portrait frame
+- [X] Test on Pi 4B with Picam (bad SD card)
+- [X] Install in portrait frame
+- [ ] Speed up gaze
+    [ ] hardware option: USB with OS (hardware option)
+    [ ] software option: only update eyes portion (hold in memory)
 
 
 ## Note

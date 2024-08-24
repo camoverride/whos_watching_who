@@ -5,7 +5,6 @@ import time
 from collections import deque
 import yaml
 import mediapipe as mp
-from picamera2 import Picamera2
 
 
 # Load the YAML configuration file
@@ -35,10 +34,8 @@ os.system("unclutter -idle 0 &")
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
 
-# Initialize the PiCamera2 module
-picam2 = Picamera2()
-picam2.configure(picam2.create_preview_configuration(main={"size": (1280, 720), "format": "RGB888"}))
-picam2.start()
+# Initialize the webcam
+cap = cv2.VideoCapture(0)
 
 # Initialize variables
 frame_width = config["width"]
@@ -64,11 +61,15 @@ cv2.imshow("Image Display", background_image_copy)
 
 # Main event loop
 while True:
-    # Capture frame
-    frame = np.array(picam2.capture_array(), dtype=np.uint8)
+    # Capture frame from webcam
+    ret, frame = cap.read()
+
+    if not ret:
+        print("Failed to capture image from webcam.")
+        break
 
     # Flip the frame horizontally, to mimic a mirror.
-    frame = cv2.cvtColor(np.flip(frame, 1), cv2.COLOR_RGB2BGR)
+    frame = cv2.flip(frame, 1)
 
     # Detect faces using MediaPipe on the flipped frame
     results = face_detection.process(frame)
@@ -158,6 +159,6 @@ while True:
     if cv2.waitKey(5) & 0xFF == ord("q"):
         break
 
-# Release the capture and close windows
-picam2.stop()
+# Release the webcam and close windows
+cap.release()
 cv2.destroyAllWindows()
