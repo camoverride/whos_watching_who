@@ -124,7 +124,7 @@ while True:
 
     else:
         # Only update detection every 0.05 seconds and if no transition is in progress
-        if current_time - last_detection_time >= 0.05:
+        if current_time - last_detection_time >= 0.0005:
             if results.detections:
                 for detection in results.detections:
                     # Get the bounding box of the detected face
