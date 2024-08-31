@@ -7,7 +7,7 @@ height: 1920
 width: 1080
 
 # For large image sets (> 50) increate the stride so transitions are faster.
-stride: 3
+stride: 5
 
 # Show the debug video?
 debug: False

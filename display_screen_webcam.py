@@ -5,7 +5,6 @@ import time
 from collections import deque
 import yaml
 import mediapipe as mp
-from threading import Thread
 
 
 # Load the YAML configuration file
@@ -41,8 +40,9 @@ cap = cv2.VideoCapture(0)
 # Initialize variables
 frame_width = config["width"]
 frame_height = config["height"]
-last_displayed_index = None
-transition_in_progress = False
+last_displayed_index = None  # Track the last displayed image index
+last_detection_time = time.time()
+transition_in_progress = False  # To check if we're in the middle of a smoothing transition
 start_index = None
 end_index = None
 
@@ -53,84 +53,108 @@ position_history = deque(maxlen=5)  # Keep track of the last 5 positions
 cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
 cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-# Pre-read the initial image from memmap
+# Display the initial background with the central image overlaid
 initial_overlay = images[num_locations // 2]
 background_image[960:960+cropped_height, 395:395+cropped_width] = initial_overlay
 cv2.imshow("Image Display", background_image)
 
-# Function for handling face detection in a separate thread
-def detect_faces():
-    global face_detection_results, frame_ready, detection_thread_active
-    while detection_thread_active:
-        ret, frame = cap.read()
-        if ret:
-            # Flip the frame horizontally, to mimic a mirror.
-            frame = cv2.flip(frame, 1)
-            face_detection_results = face_detection.process(frame)
-            frame_ready = True
-
-# Variables for threading
-face_detection_results = None
-frame_ready = False
-detection_thread_active = True
-
-# Start the face detection thread
-detection_thread = Thread(target=detect_faces)
-detection_thread.start()
-
-# Function to update the display
-def update_display(index):
-    overlay_image = images[index - 1]  # Read only the needed part of memmap
-    background_image[960:960+cropped_height, 395:395+cropped_width] = overlay_image
-    cv2.imshow("Image Display", background_image)
-
 # Main event loop
 while True:
+    # Capture frame from webcam
+    ret, frame = cap.read()
+
+    if not ret:
+        print("Failed to capture image from webcam.")
+        break
+
+    # Flip the frame horizontally, to mimic a mirror.
+    frame = cv2.flip(frame, 1)
+
+    # Detect faces using MediaPipe on the flipped frame
+    results = face_detection.process(frame)
+
+    # Draw detections on the frame for debugging
+    if config["debug"] and results.detections:
+        for detection in results.detections:
+            bboxC = detection.location_data.relative_bounding_box
+            x, y, w, h = (int(bboxC.xmin * frame.shape[1]), 
+                        int(bboxC.ymin * frame.shape[0]),
+                        int(bboxC.width * frame.shape[1]), 
+                        int(bboxC.height * frame.shape[0]))
+
+            # Adjust the x-coordinate for the mirrored frame correctly
+            x = frame.shape[1] - (x + w)  # This correctly mirrors the x-coordinate
+
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.putText(frame, f"X: {bboxC.xmin:.2f}", (x, y - 10), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        # Display the webcam stream with detection annotations
+        debug_window_name = "Webcam Stream"
+        cv2.namedWindow(debug_window_name, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(debug_window_name, 320, 240)  # Set size of the debug window
+        cv2.moveWindow(debug_window_name, 0, frame_height - 240)  # Move window to bottom-left
+        cv2.imshow(debug_window_name, frame)  # Show frame in the debug window
+
     current_time = time.time()
 
+    # Handle the smoothing transition
     if transition_in_progress:
-        # Speed up transition handling
-        next_index = min(end_index, start_index + config["stride"]) if start_index < end_index else max(end_index, start_index - config["stride"])
-        update_display(next_index)
-        last_displayed_index = next_index
-        start_index = next_index
+        if current_time - last_detection_time >= 0.00005:
+            # Perform the transition
+            if start_index < end_index:
+                next_index = min(end_index, start_index + config["stride"])
+            else:
+                next_index = max(end_index, start_index - config["stride"])
 
-        # End the transition when we reach the target
-        if start_index == end_index:
-            transition_in_progress = False
+            # Overlay the next image in the transition onto the background
+            background_image[960:960+cropped_height, 395:395+cropped_width] = images[next_index - 1]
+            cv2.imshow("Image Display", background_image)
+            last_displayed_index = next_index
+            
+            # Update indices
+            start_index = next_index
+            last_detection_time = current_time  # Update the time
+
+            # End the transition when we reach the target
+            if start_index == end_index:
+                transition_in_progress = False
 
     else:
-        if frame_ready:
-            if face_detection_results and face_detection_results.detections:
-                for detection in face_detection_results.detections:
+        # Only update detection every 0.05 seconds and if no transition is in progress
+        if current_time - last_detection_time >= 0.0005:
+            if results.detections:
+                for detection in results.detections:
+                    # Get the bounding box of the detected face
                     bboxC = detection.location_data.relative_bounding_box
                     center_x = bboxC.xmin + bboxC.width / 2
+
+                    # Normalize the x-coordinate to the range [1, NUM_LOCATIONS]
                     horizontal_position = (center_x * (num_locations - 1)) + 1
-                    position_history.append(horizontal_position)
+                    position_history.append(horizontal_position)  # Add to position history
 
-                    # Smooth the positions by taking the mean of the last few positions
-                    smoothed_position = np.mean(position_history) if len(position_history) > 1 else position_history[0]
+                    # Smooth the positions by taking the median of the last few positions
+                    smoothed_position = np.median(position_history)
                     closest_index = round(smoothed_position)
-                    closest_index = min(max(closest_index, 1), num_locations)
+                    closest_index = min(max(closest_index, 1), num_locations)  # Ensure index is within [1, NUM_LOCATIONS]
 
+                    # If the detected position corresponds to a different image, start smoothing transition
                     if closest_index != last_displayed_index:
                         start_index = last_displayed_index if last_displayed_index is not None else closest_index
                         end_index = closest_index
                         transition_in_progress = True
                         break
 
-            frame_ready = False
+            last_detection_time = current_time  # Update the detection time
 
-        if last_displayed_index is not None and not transition_in_progress:
-            update_display(last_displayed_index)
+        # Continue displaying the last valid image
+        if last_displayed_index is not None:
+            background_image[960:960+cropped_height, 395:395+cropped_width] = images[last_displayed_index - 1]
+            cv2.imshow("Image Display", background_image)
     
     # Wait for 'q' to quit
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
-
-# Stop the detection thread
-detection_thread_active = False
-detection_thread.join()
 
 # Release the webcam and close windows
 cap.release()
