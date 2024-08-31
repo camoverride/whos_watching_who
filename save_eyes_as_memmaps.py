@@ -77,7 +77,6 @@ if __name__ == "__main__":
                           crop_coords=crop_coords,
                           channels=3)
 
-    # Show a cropped image
     num_images = len(os.listdir(config["path_to_image_directory"]))
     cropped_height = crop_coords[2] - crop_coords[0]
     cropped_width = crop_coords[3] - crop_coords[1]
@@ -88,5 +87,5 @@ if __name__ == "__main__":
                        shape=(num_images, cropped_height, cropped_width, 3)
                        )
     
-    cv2.imshow(f"Cropped Image {101}", memmap[51])
+    cv2.imshow(f"Cropped Image 51", memmap[51])
     cv2.waitKey(0)

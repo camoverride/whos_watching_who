@@ -55,9 +55,8 @@ cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLS
 
 # Display the initial background with the central image overlaid
 initial_overlay = images[num_locations // 2]
-background_image_copy = background_image.copy()
-background_image_copy[960:960+cropped_height, 395:395+cropped_width] = initial_overlay
-cv2.imshow("Image Display", background_image_copy)
+background_image[960:960+cropped_height, 395:395+cropped_width] = initial_overlay
+cv2.imshow("Image Display", background_image)
 
 # Main event loop
 while True:
@@ -109,9 +108,8 @@ while True:
                 next_index = max(end_index, start_index - config["stride"])
 
             # Overlay the next image in the transition onto the background
-            background_image_copy = background_image.copy()
-            background_image_copy[960:960+cropped_height, 395:395+cropped_width] = images[next_index - 1]
-            cv2.imshow("Image Display", background_image_copy)
+            background_image[960:960+cropped_height, 395:395+cropped_width] = images[next_index - 1]
+            cv2.imshow("Image Display", background_image)
             last_displayed_index = next_index
             
             # Update indices
@@ -151,9 +149,8 @@ while True:
 
         # Continue displaying the last valid image
         if last_displayed_index is not None:
-            background_image_copy = background_image.copy()
-            background_image_copy[960:960+cropped_height, 395:395+cropped_width] = images[last_displayed_index - 1]
-            cv2.imshow("Image Display", background_image_copy)
+            background_image[960:960+cropped_height, 395:395+cropped_width] = images[last_displayed_index - 1]
+            cv2.imshow("Image Display", background_image)
     
     # Wait for 'q' to quit
     if cv2.waitKey(1) & 0xFF == ord("q"):
