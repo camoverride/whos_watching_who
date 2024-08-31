@@ -53,7 +53,7 @@ Get the logs: `journalctl --user -u display.service`
 - [X] Install in portrait frame
 - [ ] Speed up gaze
     [ ] hardware option: USB with OS (hardware option)
-    [ ] software option: only update eyes portion (hold in memory)
+    [X] software option: only update eyes portion (hold in memory)
 
 
 ## Note
