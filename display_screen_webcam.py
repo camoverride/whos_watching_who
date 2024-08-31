@@ -156,7 +156,7 @@ while True:
             cv2.imshow("Image Display", background_image_copy)
     
     # Wait for 'q' to quit
-    if cv2.waitKey(5) & 0xFF == ord("q"):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 # Release the webcam and close windows
