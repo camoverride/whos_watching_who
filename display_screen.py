@@ -65,6 +65,9 @@ background_image_copy = background_image.copy()
 background_image_copy[960:960+cropped_height, 395:395+cropped_width] = initial_overlay
 cv2.imshow("Image Display", background_image_copy)
 
+cv2.rectangle(background_image_copy, (395, 960), (395 + cropped_width, 960 + cropped_height), (0, 255, 0), 3)
+cv2.imshow("Debug Placement", background_image_copy)
+
 # Main event loop
 while True:
     # Capture frame
