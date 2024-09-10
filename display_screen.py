@@ -61,7 +61,8 @@ position_history = deque(maxlen=5)  # Keep track of the last 5 positions
 # Display the initial background with the central image overlaid
 initial_overlay = images[num_locations // 2]
 background_image_copy = background_image.copy()
-background_image_copy[300:300+cropped_height, 200:200+cropped_width] = initial_overlay
+# background_image_copy[300:300+cropped_height, 200:200+cropped_width] = initial_overlay
+background_image_copy[960:960+cropped_height, 395:395+cropped_width] = initial_overlay
 cv2.imshow("Image Display", background_image_copy)
 
 # Main event loop
