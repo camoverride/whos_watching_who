@@ -71,7 +71,7 @@ if __name__ == "__main__":
     images = [cv2.imread(image_path) for image_path in sorted_image_paths]
 
     # (top, left, bottom, right)
-    crop_coords = (300, 200, config["height"] - 900, config["width"] - 200)
+    crop_coords = (600, 200, config["height"] - 950, config["width"] - 200)
 
     save_images_to_memmap(images=images,
                           memmap_file=config["path_to_image_memmap"],
