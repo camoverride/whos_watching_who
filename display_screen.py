@@ -63,7 +63,7 @@ initial_overlay = images[num_locations // 2]
 background_image_copy = background_image.copy()
 # background_image_copy[300:300+cropped_height, 200:200+cropped_width] = initial_overlay
 # background_image_copy[960:960+cropped_height, 395:395+cropped_width] = initial_overlay
-background_image_copy[300:300+cropped_height, 150:150+cropped_width] = initial_overlay
+background_image_copy[300:300+cropped_height, 175:175+cropped_width] = initial_overlay
 cv2.imshow("Image Display", background_image_copy)
 
 
