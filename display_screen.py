@@ -15,9 +15,9 @@ with open("config.yaml", "r") as file:
 # Read the images (cropped portion) into memory
 num_locations = len(os.listdir(config["path_to_image_directory"]))
 # display_height - a - c
-cropped_height = config["height"] - 300 - 900
+cropped_height = config["height"] - 300
 # display_width - b - d
-cropped_width = config["width"] - 200 - 200
+cropped_width = config["width"] - 200
 images = np.memmap(config["path_to_image_memmap"],
                    dtype=np.uint8,
                    mode='r',
