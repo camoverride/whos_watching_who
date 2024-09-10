@@ -1,15 +1,15 @@
 # All the eye images
-path_to_image_directory: nadal_101
-path_to_image_memmap: nadal_101.dat
+path_to_image_directory: jeff_bezos
+path_to_image_memmap: bezos_31.dat
 
 # The dimensions of the image (should be the same as the monitor)
-height: 1920
-width: 1080
+height: 1324
+width: 900
 
 # For large image sets (> 50) increate the stride so transitions are faster.
-stride: 5
+stride: 1
 
 # Show the debug video?
 debug: False
 
-path_to_background_image: nadal_101/51.png
+path_to_background_image: jeff_bezos/16.png
