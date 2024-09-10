@@ -15,9 +15,9 @@ with open("config.yaml", "r") as file:
 # Read the images (cropped portion) into memory
 num_locations = len(os.listdir(config["path_to_image_directory"]))
 # display_height - a - c
-cropped_height = config["height"] - 600 - 950
+cropped_height = config["height"] - 600 - 950 # = 50
 # display_width - b - d
-cropped_width = config["width"] - 200 - 200
+cropped_width = config["width"] - 200 - 200 # = 500
 images = np.memmap(config["path_to_image_memmap"],
                    dtype=np.uint8,
                    mode='r',
@@ -63,7 +63,7 @@ initial_overlay = images[num_locations // 2]
 background_image_copy = background_image.copy()
 # background_image_copy[300:300+cropped_height, 200:200+cropped_width] = initial_overlay
 # background_image_copy[960:960+cropped_height, 395:395+cropped_width] = initial_overlay
-background_image_copy[300:300+cropped_height, 200:200+cropped_width] = initial_overlay
+background_image_copy[600:600+cropped_height, 200:200+cropped_width] = initial_overlay
 cv2.imshow("Image Display", background_image_copy)
 
 
@@ -114,7 +114,7 @@ while True:
 
             # Overlay the next image in the transition onto the background
             background_image_copy = background_image.copy()
-            background_image_copy[300:300+cropped_height, 200:200+cropped_width] = images[next_index - 1]
+            background_image_copy[600:600+cropped_height, 200:200+cropped_width] = images[next_index - 1]
             cv2.imshow("Image Display", background_image_copy)
             last_displayed_index = next_index
             
@@ -156,7 +156,7 @@ while True:
         # Continue displaying the last valid image
         if last_displayed_index is not None:
             background_image_copy = background_image.copy()
-            background_image_copy[300:300+cropped_height, 200:200+cropped_width] = images[last_displayed_index - 1]
+            background_image_copy[600:600+cropped_height, 200:200+cropped_width] = images[last_displayed_index - 1]
             cv2.imshow("Image Display", background_image_copy)
     
     # Wait for 'q' to quit
