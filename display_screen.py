@@ -114,7 +114,7 @@ while True:
 
             # Overlay the next image in the transition onto the background
             background_image_copy = background_image.copy()
-            background_image_copy[960:960+cropped_height, 395:395+cropped_width] = images[next_index - 1]
+            background_image_copy[300:300+cropped_height, 200:200+cropped_width] = images[next_index - 1]
             cv2.imshow("Image Display", background_image_copy)
             last_displayed_index = next_index
             
