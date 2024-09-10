@@ -61,7 +61,7 @@ cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLS
 # Display the initial background with the central image overlaid
 initial_overlay = images[num_locations // 2]
 background_image_copy = background_image.copy()
-background_image_copy[300:300+cropped_height, 200:200+cropped_width] = initial_overlay
+background_image_copy[900:900+cropped_height, 200:200+cropped_width] = initial_overlay
 cv2.imshow("Image Display", background_image_copy)
 
 # Main event loop
