@@ -18,7 +18,10 @@ num_locations = len(os.listdir(config["path_to_image_directory"]))
 images = np.memmap(config["path_to_image_memmap"],
                    dtype=np.uint8,
                    mode='r',
-                   shape=(num_locations, config["height"], config["width"], 3))
+                   shape=(num_locations,
+                          config["height"] - 960 - 905,
+                          config["width"] - 395 - 395,
+                          3))
 
 # Rotate screen
 os.environ["DISPLAY"] = ':0'
