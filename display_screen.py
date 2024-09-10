@@ -55,8 +55,8 @@ end_index = None
 position_history = deque(maxlen=5)  # Keep track of the last 5 positions
 
 # Create a fullscreen window for image display
-cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
-cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+# cv2.namedWindow("Image Display", cv2.WND_PROP_FULLSCREEN)
+# cv2.setWindowProperty("Image Display", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
 # Display the initial background with the central image overlaid
 initial_overlay = images[num_locations // 2]
