@@ -28,7 +28,7 @@ background_image = cv2.imread(config["path_to_background_image"])
 
 # Rotate screen
 os.environ["DISPLAY"] = ':0'
-os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-2 --transform 90")
+os.system("WAYLAND_DISPLAY=wayland-1 wlr-randr --output HDMI-A-1 --transform 90")
 
 # Hide the mouse
 os.system("unclutter -idle 0 &")
